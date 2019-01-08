@@ -1,0 +1,64 @@
+html, body, #app{
+  height: 100%;
+  font-family: "Microsoft Yahei";
+}
+.page{
+  height: 100%;
+  padding: 0 3%;
+}
+.has-header{
+  padding-top: 128px;
+}
+
+/* 不可点击按钮 */
+.btn-disabled{
+  background: #A6A6A6;
+}
+
+/* 字体颜色 */
+.color-text-3{
+  color: #333
+}
+.color-text-6{
+  color: #666
+}
+.color-text-9{
+  color: #999
+}
+.color-theme-text {
+  color: #4380FF;
+}
+.color-theme-bg {
+  background-color: #4380FF;
+}
+
+.clearfix {
+  display: block;
+}
+.clearfix:after {
+  content: '';
+  display: block;
+  height: 0;
+  line-height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.arrow-right {
+  width: 20px;
+  height: 20px;
+  border-right: 1px solid;
+  border-top: 1px solid;
+  transform: rotate(45deg);
+}
+
+.mint-indicator-wrapper {
+  z-index: 9999!important;
+}
+.mint-toast {
+  z-index: 10000!important;
+}
