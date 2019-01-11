@@ -22,6 +22,7 @@ export default {
   height: 128px
   color: $color-text-3
   border-bottom: 1px solid #eee; /*no*/
+  background-color: #fff
   .header-inner
     display: flex
     justify-content: space-between
@@ -31,12 +32,12 @@ export default {
     padding: 0 30px
     .header-back
       display: inline-block
-      width: 30px
-      height: 30px
+      width: 25px
+      height: 25px
       border-color: $color-text-3
       border-left: 1px solid; /*no*/
       border-top: 1px solid; /*no*/
-      transform: rotate(-45deg)
+      transform: translateY(20px) rotate(-45deg)
       // background: url('./img/back.png') no-repeat center/100% 100%
     .header-title
       position: absolute

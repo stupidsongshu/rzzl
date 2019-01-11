@@ -1,13 +1,14 @@
 <template>
   <div class="page has-header">
     <my-header>
-      <span class="header-back"></span>
+      <span class="header-back" @click="back"></span>
       <span class="header-title">视频认证</span>
     </my-header>
 
     <div class="page-content">
       <div class="video">
         <img src="../assets/img/video.png" alt="">
+        <input type="file" accept="video/*" capture="camcorder" @change="videoChange($event)">
       </div>
       <p class="title1">*温馨提示：</p>
       <p class="title2">您需要录用前置摄像头录制一段承诺视频，话术如下：</p>
@@ -22,9 +23,52 @@
 
 <script>
 export default {
+  data () {
+    return {
+      file: null
+    }
+  },
+  computed: {
+    processStatus () {
+      return this.$store.state.com.processStatus
+    }
+  },
   methods: {
+    back () {
+      this.goBack()
+    },
+    videoChange (e) {
+      let files = e.target.files
+      if (files.length === 0) {
+        this.file = null
+        return
+      }
+      this.file = files[0]
+      console.log(this.file)
+      console.log('fileType:', this.file.type)
+      console.log('fileSize:', this.file.size / 1024 / 1024 + 'MB')
+    },
     submit () {
-      this.$router.replace('/detail')
+      if (!this.file) {
+        this.toast('请先录制视频')
+        return
+      }
+      let formData = new FormData()
+      formData.append('file', this.file)
+      formData.append('projectSignatoryId', this.processStatus.projectSignatoryId)
+      let options = {
+        url: 'i/uploadVideo',
+        params: formData
+      }
+      this.$fileHttp(options).then(res => {
+        if (res.returnCode === '000000') {
+          this.toast('视频上传成功，请等待审核', 5000)
+          this.$store.commit('ProcessStatus', res.data)
+        } else {
+          this.toast(res.returnMsg)
+        }
+      })
+      // this.$router.replace('/detail')
     }
   }
 }

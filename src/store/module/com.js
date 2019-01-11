@@ -1,12 +1,19 @@
+import Cookies from 'js-cookie'
+
 const state = {
-  mobileNo: '15620516990',
+  mobileNo: '',
   signStatusMap: {
     1: '待签署',
     2: '待审核',
     3: '审核通过',
     4: '审核拒绝'
   },
-  projectInfo: {}
+  // 签约项目信息
+  projectInfo: {},
+  // 流程控制状态
+  processStatus: {},
+  // face++
+  faceBizIdInfo: Cookies.get('faceBizIdInfo')
 }
 const getters = {}
 const mutations = {
@@ -15,6 +22,13 @@ const mutations = {
   },
   ProjectInfo (state, payload) {
     state.projectInfo = payload
+  },
+  ProcessStatus (state, payload) {
+    state.processStatus = payload
+  },
+  FaceBizIdInfo (state, payload) {
+    state.faceBizIdInfo = payload
+    Cookies.set('faceBizIdInfo', payload, { expires: 1 })
   }
 }
 const actions = {}

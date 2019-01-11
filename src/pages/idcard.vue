@@ -1,7 +1,7 @@
 <template>
   <div class="page has-header">
     <my-header>
-      <span class="header-back"></span>
+      <span class="header-back" @click="back"></span>
       <span class="header-title">身份证认证</span>
     </my-header>
 
@@ -13,11 +13,12 @@
             <div class="idcard__panel__img__inner">
               <img class="idcard__panel__img__origin" :src="idCardFrontImg" alt="人像面" v-show="idCardFrontImg">
               <img class="idcard__panel__img__origin" src="../assets/img/shooting_facade_bg.png" alt="人像面" v-if="!idCardFrontImg">
-              <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="人像面通过" v-if="idCardFrontStatus">
+              <!-- <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="人像面通过" v-if="idCardFrontStatus"> -->
             </div>
-            <input class="idcard_input" type="file" capture="camera" accept="image/*" @change="idcardOCR(1, $event)">
+            <input class="idcard_input" type="file" capture="camera" accept="image/*" @change="idcardOCR(0, $event)">
           </div>
-          <p class="idcard__panel__text" :class="{'fail': idStatusFail}">{{idCardImgFrontText}}</p>
+          <!-- <p class="idcard__panel__text" :class="{'fail': idStatusFail}">{{idCardImgFrontText}}</p> -->
+          <p class="idcard__panel__text">身份证人像面</p>
         </div>
         <div class="idcard__panel__inner idcard__panel__inner--back">
           <div class="idcard__panel__img">
@@ -25,26 +26,28 @@
             <div class="idcard__panel__img__inner">
               <img class="idcard__panel__img__origin" :src="idCardBackImg" alt="国徽面" v-if="idCardBackImg">
               <img class="idcard__panel__img__origin" src="../assets/img/shooting_back_bg.png" alt="国徽面" v-if="!idCardBackImg">
-              <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="国徽面通过" v-if="idCardBackStatus">
+              <!-- <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="国徽面通过" v-if="idCardBackStatus"> -->
             </div>
-            <input class="idcard_input" type="file" capture="camera" accept="image/*" @change="idcardOCR(2, $event)">
+            <input class="idcard_input" type="file" capture="camera" accept="image/*" @change="idcardOCR(1, $event)">
           </div>
-          <p class="idcard__panel__text" :class="{'fail': idStatusFail}">{{idCardImgBackText}}</p>
+          <p class="idcard__panel__text">身份证国徽面</p>
         </div>
       </div>
 
       <div class="idcard__info">
         <div class="form-group">
           <label class="form-group__label" for="">姓名</label>
-          <input class="form-group__input" type="text" placeholder="中文姓名" v-model="customerName">
+          <!-- <input class="form-group__input" type="text" placeholder="中文姓名" v-model="customerName"> -->
+          <p class="form-group__input">{{projectInfo.signatoryName}}</p>
         </div>
         <div class="form-group margiB">
           <label class="form-group__label" for="">身份证号</label>
-          <input class="form-group__input" type="text" placeholder="身份证号" v-model="customeIdCardNo" :disabled="!isTest">
+          <!-- <input class="form-group__input" type="text" placeholder="身份证号" v-model="customeIdCardNo" :disabled="!isTest"> -->
+          <p class="form-group__input">{{projectInfo.signatoryIdno}}</p>
         </div>
       </div>
       <div class="align-center">
-        <my-button :disabled="idStatusFail" @click="submit">确认</my-button>
+        <my-button :disabled="processStatus.ocrStatus === 0" @click="submit">确认</my-button>
       </div>
     </div>
   </div>
@@ -56,67 +59,26 @@ import EXIF from 'exif-js'
 export default {
   data () {
     return {
-      isFail: false,
-      customerName: '',
-      customeIdCardNo: '', // 保存最终身份证号(可编辑方便测试)
-      // 身份证正面(人像面)
-      idCardFrontOCR: {
-        img: '',
-        idName: '',
-        idNo: '',
-        status: false
-      },
-      // 身份证反面(国徽面)
-      idCardBackOCR: {
-        img: '',
-        office: '',
-        validTerm: '',
-        status: false
-      }
+      idCardFrontImg: '',
+      idCardBackImg: ''
     }
   },
   computed: {
     isTest () {
       return process.env.NODE_ENV.indexOf('development') !== -1
     },
-    idCardNo () {
-      return this.idCardFrontOCR.idNo
+    projectInfo () {
+      return this.$store.state.com.projectInfo
     },
-    idCardName () {
-      return this.idCardFrontOCR.idName
-    },
-    idCardFrontImg () {
-      return this.idCardFrontOCR.img
-    },
-    idCardFrontStatus () {
-      return this.idCardFrontOCR.status
-    },
-    idCardBackImg () {
-      return this.idCardBackOCR.img
-    },
-    idCardBackStatus () {
-      return this.idCardBackOCR.status
-    },
-    idStatusFail () {
-      return false
-    },
-    idCardImgFrontText () {
-      if (this.isFail) {
-        return '资质认证不通过'
-      } else {
-        return '身份证人像面'
-      }
-    },
-    idCardImgBackText () {
-      if (this.isFail) {
-        return '资质认证不通过'
-      } else {
-        return '身份证国徽面'
-      }
+    processStatus () {
+      return this.$store.state.com.processStatus
     }
   },
   methods: {
-    // type: 1人像面 2国徽面
+    back () {
+      this.goBack()
+    },
+    // type: 0人像面 1国徽面
     idcardOCR (type, e) {
       let files = e.target.files || e.dataTransfer.files
       if (!files.length === 0) return
@@ -125,7 +87,7 @@ export default {
       console.log('fileType:', file.type)
       console.log('fileSize:', file.size / 1024 / 1024 + 'MB')
       if (file.type !== 'image/jpeg') {
-        this.toast('只支持jpg或jpeg格式图片', 2000)
+        this.toast('只支持jpg或jpeg格式图片')
         return
       }
 
@@ -178,18 +140,45 @@ export default {
 
           e.target.value = ''
 
-          // this.uploadIdCardOcr(base64, type)
-
-          if (type === 1) {
-            this.idCardFrontOCR.img = base64
-          } else if (type === 2) {
-            this.idCardBackOCR.img = base64
-          }
+          this.uploadIdCardOcr(base64, type)
         }
       }
     },
+    uploadIdCardOcr (base64, imageType) {
+      if (!base64) {
+        this.toast('请重新拍摄身份证')
+        return
+      }
+      let image = base64.split('data:image/jpeg;base64,')[1]
+      let options = {
+        url: 'i/ocr',
+        params: {
+          // 身份证照片
+          image,
+          // 身份证照片类型:0正面 1反面
+          imageType,
+          projectSignatoryId: this.processStatus.projectSignatoryId
+        }
+      }
+      this.$http(options).then(res => {
+        if (res.returnCode === '000000') {
+          if (imageType === 0) {
+            this.idCardFrontImg = base64
+          } else if (imageType === 1) {
+            this.idCardBackImg = base64
+          }
+          this.$store.commit('ProcessStatus', res.data)
+        } else if (res.returnCode === '000055') {
+          let ocr = res.ocr
+          let msg = '身份信息不一致:' + ocr.name + ' ' + ocr.idcard_number
+          this.toast(msg, 5000)
+        } else {
+          this.toast(res.returnMsg)
+        }
+      })
+    },
     submit () {
-      this.$router.replace('/sign')
+      this.processCtrl()
     }
   }
 }

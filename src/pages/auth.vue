@@ -1,7 +1,7 @@
 <template>
   <div class="page has-header">
     <my-header>
-      <span class="header-back"></span>
+      <span class="header-back" @click="back"></span>
       <span class="header-title">运营商认证</span>
     </my-header>
 
@@ -27,8 +27,6 @@
 </template>
 
 <script>
-import http from '@/http'
-
 export default {
   data () {
     return {
@@ -41,6 +39,9 @@ export default {
     }
   },
   methods: {
+    back () {
+      this.goBack()
+    },
     // 运营商三要素认证
     submit () {
       let options = {
@@ -52,9 +53,10 @@ export default {
           signatoryName: this.projectInfo.signatoryName
         }
       }
-      http(options).then(res => {
+      this.$http(options).then(res => {
         if (res.returnCode === '000000') {
-          // this.$router.replace('/idcard')
+          this.$store.commit('ProcessStatus', res.data)
+          this.processCtrl()
         } else {
           this.toast(res.returnMsg)
         }

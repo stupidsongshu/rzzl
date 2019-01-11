@@ -1,13 +1,14 @@
 <template>
   <div class="page has-header">
     <my-header>
-      <span class="header-back"></span>
+      <span class="header-back" @click="back"></span>
       <span class="header-title">项目列表</span>
     </my-header>
 
     <div class="page-content">
       <ul>
-        <li class="item" v-for="item in list" :key="item.projectId" @click="viewProject(item)">
+        <!-- <li class="item" v-for="(item, index) in list" :key="item.projectId" @click="viewProject(item)"> -->
+        <li class="item" v-for="(item, index) in list" :key="index" @click="viewProject(item)">
           <div class="left">
             <p class="name">{{item.project.projectName}}</p>
             <p class="desp">项目描述：{{item.project.projectDesc}}</p>
@@ -21,17 +22,17 @@
           </div>
         </li>
       </ul>
+      <p class="no-data" v-if="listHttp && list.length === 0">暂无签约项目</p>
     </div>
   </div>
 </template>
 
 <script>
-import http from '@/http'
-
 export default {
   data () {
     return {
-      list: []
+      list: [],
+      listHttp: false
     }
   },
   computed: {
@@ -46,6 +47,9 @@ export default {
     this.checkContract()
   },
   methods: {
+    back () {
+      this.goBack()
+    },
     // 检查是否有合同需要签署
     checkContract () {
       let options = {
@@ -54,7 +58,8 @@ export default {
           signatoryMobile: this.mobileNo
         }
       }
-      http(options).then(res => {
+      this.$http(options).then(res => {
+        this.listHttp = true
         if (res.returnCode === '000000') {
           this.list = res.list
         } else {
@@ -62,10 +67,32 @@ export default {
         }
       })
     },
+    // 获取签约人状态
+    signatoryStatus (item) {
+      return new Promise(resolve => {
+        let options = {
+          url: 'i/signatoryStatus',
+          params: {
+            projectId: item.projectId,
+            signatoryIdno: item.signatoryIdno,
+            signatoryMobile: item.signatoryMobile,
+            signatoryName: item.signatoryName
+          }
+        }
+        this.$http(options).then(res => {
+          if (res.returnCode === '000000') {
+            this.$store.commit('ProjectInfo', item)
+            this.$store.commit('ProcessStatus', res.data)
+            this.processCtrl()
+          } else {
+            this.toast(res.returnMsg)
+          }
+        })
+      })
+    },
     viewProject (item) {
       if (item.project.projectStatus === '1' || item.project.projectStatus === '2') {
-        this.$store.commit('ProjectInfo', item)
-        this.$router.replace('/auth')
+        this.signatoryStatus(item)
       }
     }
   }

@@ -6,6 +6,25 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      blackList: [
+        '/idcard',
+        '/sign',
+        '/video'
+      ]
+    }
+  },
+  watch: {
+    '$route': (to, from) => {
+      let bool = this.blackList.some(item => {
+        return item === from.path
+      })
+      if (bool) {
+        this.$router.replace('/list')
+      }
+    }
+  }
 }
 </script>

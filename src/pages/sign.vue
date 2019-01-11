@@ -1,7 +1,7 @@
 <template>
   <div class="page has-header">
     <my-header>
-      <span class="header-back"></span>
+      <span class="header-back" @click="back"></span>
       <span class="header-title">合同签署</span>
     </my-header>
 
@@ -22,11 +22,9 @@
 
       <div class="panel">
         <div class="title">签署合同</div>
-        <div>
-          <my-xy :xyData="protocolArr">
-            <input class="xy-input" type="checkbox" v-model="agreeProtocol">
-          </my-xy>
-        </div>
+        <my-xy :xyData="protocolArr">
+          <input class="xy-input" type="checkbox" id="my-xy" v-model="agreeProtocol">
+        </my-xy>
       </div>
 
       <div class="panel">
@@ -34,12 +32,12 @@
         <div class="smsCode-wrapper">
           <span class="name">验证码</span>
           <input type="number" placeholder="请输入验证码" v-model="smsCode" oninput="if(value.length>6)value=value.slice(0,6)">
-          <span class="smsCode" >获取验证码</span>
+          <span class="btn">获取验证码</span>
         </div>
       </div>
 
       <div class="align-center btn-groups">
-        <my-button @click="submit">确认</my-button>
+        <my-button :disabled="processStatus.faceStatus === 0" @click="submit">确认</my-button>
       </div>
     </div>
   </div>
@@ -68,10 +66,112 @@ export default {
       smsCode: ''
     }
   },
+  computed: {
+    projectInfo () {
+      return this.$store.state.com.projectInfo
+    },
+    processStatus () {
+      return this.$store.state.com.processStatus
+    },
+    faceBizIdInfo () {
+      return this.$store.state.com.faceBizIdInfo
+    }
+  },
+  created () {
+    console.log('faceBizIdInfo:', typeof this.faceBizIdInfo, this.faceBizIdInfo)
+    console.log('query:', this.$route.query)
+    if (this.faceBizIdInfo && this.$route.query.from === 'face') {
+      this.getFaceResult()
+    }
+  },
   methods: {
-    livingCheck () {},
+    back () {
+      this.goBack()
+    },
+    // 获取Face活体认证Token
+    getFaceToken () {
+      let idCardName = this.projectInfo.signatoryName
+      let idCardNumber = this.projectInfo.signatoryIdno
+      let projectSignatoryId = this.processStatus.projectSignatoryId
+      if (!idCardName) {
+        this.toast('身份证姓名为空')
+        return
+      }
+      if (!idCardNumber) {
+        this.toast('身份证号为空')
+        return
+      }
+
+      let returnUrl = ''
+      if (window.location.href.indexOf('?') === -1) {
+        returnUrl = window.location.href
+      } else {
+        returnUrl = window.location.href.split('?')[0]
+      }
+
+      let options = {
+        url: 'i/getFaceToken',
+        params: {
+          // 网页跳转的目标URL
+          return_url: returnUrl + '?from=face', // 'http://xfjr.ledaikuan.cn/fintek/rzzl/#/video?from=face'
+          // 验证网页展示用的标题文字
+          web_title: '活体识别',
+          // 使用场景的scene_id
+          scene_id: '',
+          // 身份对象的姓名
+          idcard_name: idCardName,
+          // 身份对象的身份证号
+          idcard_number: idCardNumber,
+          projectSignatoryId,
+          projectId: projectSignatoryId
+        }
+      }
+      this.$http(options).then(res => {
+        if (res.returnCode === '000000') {
+          this.$store.commit('FaceBizIdInfo', {
+            bizId: res.data.biz_id
+          })
+          window.location.href = res.data.url
+        } else {
+          this.toast(res.returnMsg)
+        }
+      })
+    },
+    // 获取Face活体认证结果
+    getFaceResult () {
+      let bizIdInfo = this.faceBizIdInfo
+      console.log('bizIdInfo:', typeof bizIdInfo, bizIdInfo)
+      if (typeof bizIdInfo === 'string') {
+        bizIdInfo = JSON.parse(bizIdInfo)
+      }
+      let options = {
+        url: 'i/getFaceResult',
+        params: {
+          // 活体业务编号
+          biz_id: bizIdInfo.bizId,
+          projectSignatoryId: this.processStatus.projectSignatoryId,
+          projectId: this.projectInfo.projectId
+        }
+      }
+      this.$http(options).then(res => {
+        if (res.returnCode === '000000') {
+          this.livingStatus = 1
+          this.livingImg = res.result.image || this.livingImgDefault
+          this.$store.commit('FaceBizIdInfo', null)
+          this.$store.commit('ProcessStatus', res.data)
+        } else {
+          this.livingStatus = 2
+          this.toast(res.returnMsg)
+        }
+      })
+    },
+    livingCheck () {
+      if (this.livingStatus !== 1) {
+        this.getFaceToken()
+      }
+    },
     submit () {
-      this.$router.replace('/video')
+      this.processCtrl()
     }
   }
 }
@@ -110,19 +210,19 @@ export default {
   font-size: $fs-30
   border-bottom: 1px solid #e1e1e1; /*no*/
   .name
-    width: 140px
+    width: 20%
     color: $color-text-3
   input
-    flex: 1
+    width: 65%
     height: 100%
     border: none
     outline: none
     background-color: transparent
-  .smsCode
+  .btn
     display: flex;
     justify-content: center
     align-items: center
-    width: 140px
+    width: 25%
     height: 46px
     border: 1px solid; /*no*/
     border-color: $color-theme;

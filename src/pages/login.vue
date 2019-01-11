@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import http from '@/http'
+// import http from '@/http'
 
 export default {
   data () {
@@ -61,11 +61,11 @@ export default {
     },
     getSMSCode () {
       if (!this.mobileNo) {
-        this.toast('请输入手机号', 2000)
+        this.toast('请输入手机号')
         return
       }
       if (!/^1[3456789]\d{9}$/.test(this.mobileNo)) {
-        this.toast('请输入正确的手机号', 2000)
+        this.toast('请输入正确的手机号')
         return
       }
       if (this.countdown !== 60) return
@@ -76,7 +76,7 @@ export default {
           signatoryMobile: this.mobileNo
         }
       }
-      http(options).then(res => {
+      this.$http(options).then(res => {
         if (res.returnCode === '000000') {
           this.toast('验证码发送成功')
           this.smsCountDown()
@@ -91,7 +91,7 @@ export default {
         return
       }
       if (!/^1[3456789]\d{9}$/.test(this.mobileNo)) {
-        this.toast('请输入正确的手机号', 2000)
+        this.toast('请输入正确的手机号')
         return
       }
       if (!this.msgCode) {
@@ -106,7 +106,7 @@ export default {
           yzm: this.msgCode
         }
       }
-      http(options).then(res => {
+      this.$http(options).then(res => {
         if (res.returnCode === '000000') {
           this.$store.commit('MobileNo', this.mobileNo)
           this.$router.replace('/list')

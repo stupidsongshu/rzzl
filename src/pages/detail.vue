@@ -1,7 +1,7 @@
 <template>
   <div class="page has-header">
     <my-header>
-      <span class="header-back"></span>
+      <span class="header-back" @click="back"></span>
       <span class="header-title">详情确认</span>
     </my-header>
 
@@ -59,6 +59,9 @@ export default {
     }
   },
   methods: {
+    back () {
+      this.goBack()
+    },
     submit () {
       console.log('重新签署')
     }

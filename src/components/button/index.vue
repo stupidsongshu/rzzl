@@ -7,7 +7,7 @@
 </template>
 <script>
 export default {
-  name: 'my-button',
+  name: 'myButton',
   props: {
     disabled: {
       type: Boolean,

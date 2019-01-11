@@ -1,21 +1,15 @@
 import axios from 'axios'
 import { Indicator, Toast } from 'mint-ui'
-import router from './router'
-
-let baseURL = ''
-const env = process.env.NODE_ENV
-if (env === 'development') {
-  baseURL = 'http://192.168.199.148:8085/'
-} else if (env === 'production') {
-  baseURL = ''
-}
+import router from '../router'
+import { baseURL } from '../config'
 
 const http = (options) => {
   let url = options.url
   let params = options.params
-  console.log('params:', params)
+  console.log(url + ' req:', params)
   let loading = options.loading !== undefined ? options.loading : true
   let showError = options.showError !== undefined ? options.showError : true
+
   return new Promise((resolve, reject) => {
     if (loading) {
       Indicator.open({
@@ -26,11 +20,13 @@ const http = (options) => {
     axios({
       url: baseURL + url,
       method: 'post',
+      withCredentials: true,
       data: params
     }).then(res => {
       if (loading) {
         Indicator.close()
       }
+      console.log(url + ' res:', res.data)
       if (res.data.returnCode === '000002') {
         Toast({
           message: res.data.returnMsg,
@@ -50,6 +46,8 @@ const http = (options) => {
           duration: 2000
         })
       }
+      console.error(url, ':', err.message)
+      console.error(url, ':', err)
       reject(err)
     })
   })
