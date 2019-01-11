@@ -7,18 +7,10 @@
 <script>
 export default {
   name: 'App',
-  data () {
-    return {
-      blackList: [
-        '/idcard',
-        '/sign',
-        '/video'
-      ]
-    }
-  },
   watch: {
     '$route': (to, from) => {
-      let bool = this.blackList.some(item => {
+      let blackList = ['/idcard', '/sign', '/video']
+      let bool = blackList.some(item => {
         return item === from.path
       })
       if (bool) {
