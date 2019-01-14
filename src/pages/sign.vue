@@ -22,7 +22,7 @@
 
       <div class="panel">
         <div class="title">签署合同</div>
-        <my-xy :xyData="protocolArr">
+        <my-xy :xyData="contractList">
           <input class="xy-input" type="checkbox" id="my-xy" v-model="agreeProtocol">
         </my-xy>
       </div>
@@ -32,7 +32,7 @@
         <div class="smsCode-wrapper">
           <span class="name">验证码</span>
           <input type="number" placeholder="请输入验证码" v-model="smsCode" oninput="if(value.length>6)value=value.slice(0,6)">
-          <span class="btn">获取验证码</span>
+          <span class="btn" @click="getSMSCode">{{smsCodeBtnText}}</span>
         </div>
       </div>
 
@@ -53,17 +53,19 @@ export default {
       livingImg: '',
       livingImgDefault: require('../assets/img/living_success@2x.png'),
       agreeProtocol: false,
-      protocolArr: [
-        {
-          title: '《个人消费贷款合同》',
-          url: 'https://zmcustprod.zmxy.com.cn/auth/protocol.htm?merchantId=268820000154396373223&type=03&platform=aop'
-        },
-        {
-          title: '《客户保障计划服务合同》',
-          url: 'https://www.baidu.com'
-        }
-      ],
-      smsCode: ''
+      // protocolArr: [
+      //   {
+      //     title: '《个人消费贷款合同》',
+      //     url: 'https://zmcustprod.zmxy.com.cn/auth/protocol.htm?merchantId=268820000154396373223&type=03&platform=aop'
+      //   },
+      //   {
+      //     title: '《客户保障计划服务合同》',
+      //     url: 'https://www.baidu.com'
+      //   }
+      // ],
+      contractList: [],
+      smsCode: '',
+      countdown: 60
     }
   },
   computed: {
@@ -75,6 +77,13 @@ export default {
     },
     faceBizIdInfo () {
       return this.$store.state.com.faceBizIdInfo
+    },
+    smsCodeBtnText () {
+      if (this.countdown === 60) {
+        return '获取验证码'
+      } else {
+        return this.countdown + 's'
+      }
     }
   },
   created () {
@@ -83,10 +92,28 @@ export default {
     if (this.faceBizIdInfo && this.$route.query.from === 'face') {
       this.getFaceResult()
     }
+    this.getContract()
   },
   methods: {
     back () {
       this.goBack()
+    },
+    // 拉取合同列表
+    getContract () {
+      let options = {
+        url: 'i/getContract',
+        params: {
+          projectSignatoryId: this.processStatus.projectSignatoryId,
+          signatoryName: this.projectInfo.signatoryName,
+          signatoryIdno: this.projectInfo.signatoryIdno,
+          signatoryMobile: this.projectInfo.signatoryMobile
+        }
+      }
+      this.$http(options).then(res => {
+        if (res.returnCode === '000000') {
+          this.contractList = res.list
+        }
+      })
     },
     // 获取Face活体认证Token
     getFaceToken () {
@@ -170,8 +197,55 @@ export default {
         this.getFaceToken()
       }
     },
+    getSMSCode () {
+      let signatoryMobile = this.projectInfo.signatoryMobile
+      if (!signatoryMobile) {
+        this.toast('请输入手机号')
+        return
+      }
+      if (!/^1[3456789]\d{9}$/.test(signatoryMobile)) {
+        this.toast('请输入正确的手机号')
+        return
+      }
+      if (this.countdown !== 60) return
+
+      let options = {
+        url: 'i/yzm',
+        params: {
+          signatoryMobile
+        }
+      }
+      this.$http(options).then(res => {
+        if (res.returnCode === '000000') {
+          this.toast('验证码发送成功')
+          this.smsCountDown()
+        } else {
+          this.toast(res.returnMsg)
+        }
+      })
+    },
+    // 签约
+    signContract () {
+      if (!this.smsCode) {
+        this.toast('请输入验证码')
+        return
+      }
+      let options = {
+        url: 'i/signContract',
+        params: {
+          projectSignatoryId: this.processStatus.projectSignatoryId,
+          signatoryName: this.projectInfo.signatoryName,
+          signatoryIdno: this.projectInfo.signatoryIdno,
+          signatoryMobile: this.projectInfo.signatoryMobile,
+          yzm: this.smsCode
+        }
+      }
+      this.$http(options).then(res => {
+      })
+    },
     submit () {
-      this.processCtrl()
+      // this.processCtrl()
+      this.signContract()
     }
   }
 }

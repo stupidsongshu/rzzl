@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import router from './router'
 import store from './store'
-import { Toast, MessageBox } from 'mint-ui'
+import { Toast } from 'mint-ui'
 import { http, fileHttp } from './utils'
 
 /* eslint-disable no-unused-vars */
-// var VConsole = require('vconsole/dist/vconsole.min')
-// var vConsole = new VConsole()
+var VConsole = require('vconsole/dist/vconsole.min')
+var vConsole = new VConsole()
 
 Vue.prototype.$http = http
 Vue.prototype.$fileHttp = fileHttp
@@ -23,8 +23,6 @@ Vue.prototype.toast = (msg, time) => {
     duration: time
   })
 }
-
-Vue.prototype.messageBox = MessageBox
 
 // 全局loading
 // Vue.prototype.loading = {
@@ -43,17 +41,16 @@ Vue.prototype.messageBox = MessageBox
 // }
 
 Vue.prototype.goBack = function () {
-  // router.replace('/list')
   router.go(-1)
 }
 
+/**
+ * operatorStatus: 1运营商认证成功
+ * ocrStatus: 1身份证认证成功
+ * faceStatus: 1活体识别成功
+ * videoStatus: 1视频认证成功
+ */
 Vue.prototype.processCtrl = function () {
-  /**
-   * operatorStatus: 1运营商认证成功
-   * ocrStatus: 1身份证认证成功
-   * faceStatus: 1活体识别成功
-   * videoStatus: 1视频认证成功
-   */
   let data = store.state.com.processStatus
   if (data.operatorStatus === 0) {
     router.push('/auth')

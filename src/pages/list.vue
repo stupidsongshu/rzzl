@@ -1,7 +1,6 @@
 <template>
   <div class="page has-header">
     <my-header>
-      <span class="header-back" @click="back"></span>
       <span class="header-title">项目列表</span>
     </my-header>
 
@@ -47,9 +46,6 @@ export default {
     this.checkContract()
   },
   methods: {
-    back () {
-      this.goBack()
-    },
     // 检查是否有合同需要签署
     checkContract () {
       let options = {
