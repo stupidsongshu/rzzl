@@ -8,11 +8,12 @@
     <div class="page-content">
       <div class="video">
         <img src="../assets/img/video.png" alt="">
-        <input type="file" accept="video/*" capture="camcorder" @change="videoChange($event)">
+        <input class="video-input" type="file" accept="video/*" capture="camcorder" @change="videoChange($event)">
+        <p v-if="file">已录制</p>
       </div>
       <p class="title1">*温馨提示：</p>
       <p class="title2">您需要录用前置摄像头录制一段承诺视频，话术如下：</p>
-      <div class="panel">本人承诺向XXX借款/担保，提供真实资料，遵守合约，同意上报征信。本人承诺向XXX借款/担保，提供真实资料，遵守合约，同意上报征信。本人承诺向XXX借款/担保，提供真实资料，遵守合约，同意上报征信。</div>
+      <div class="panel">本人承诺向XXX借款/担保，提供真实资料，遵守合约，同意上报征信。</div>
 
       <div class="align-center">
         <my-button @click="submit">提交</my-button>
@@ -64,11 +65,11 @@ export default {
         if (res.returnCode === '000000') {
           this.toast('视频上传成功，请等待审核', 5000)
           this.$store.commit('ProcessStatus', res.data)
+          this.processCtrl()
         } else {
           this.toast(res.returnMsg)
         }
       })
-      // this.$router.replace('/detail')
     }
   }
 }
@@ -80,10 +81,22 @@ export default {
 .page-content
   line-height: 54px
 .video
-  padding: 74px 0 56px 0
-  text-align: center
+  position: relative
+  width: 205px
+  height: 205px
+  margin: 74px auto 56px auto
+  .video-input
+    position: absolute
+    top: 0
+    right: 0
+    opacity: 0
+    width: 100%
+    height: 100%
   img
-    width: 205px
+    width: 100%
+  p
+    text-align: center
+    color: $color-theme
 .title1
   font-size: $fs-26
   color: $color-theme
@@ -98,7 +111,4 @@ export default {
   background-color: #f5f5f6
   border-radius: 10px
   color: $color-theme
-
-.btn-component
-  width: 100%!important
 </style>

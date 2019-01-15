@@ -52,22 +52,28 @@ Vue.prototype.goBack = function () {
  */
 Vue.prototype.processCtrl = function () {
   let data = store.state.com.processStatus
-  if (data.operatorStatus === 0) {
+  let operatorStatus = data.operatorStatus
+  let ocrStatus = data.ocrStatus
+  let faceStatus = data.faceStatus
+  let videoStatus = data.videoStatus
+
+  if (operatorStatus === 0) {
     router.push('/auth')
     return
   }
-  if (data.ocrStatus === 0 && data.faceStatus === 0 && data.videoStatus === 0) {
+  if (ocrStatus === 0 && faceStatus === 0 && videoStatus === 0) {
     router.push('/idcard')
     return
   }
-  if (data.ocrStatus === 1 && data.faceStatus === 0 && data.videoStatus === 0) {
-    router.push('/sign')
+  if (ocrStatus === 1 && faceStatus === 0 && videoStatus === 0) {
+    router.replace('/sign')
     return
   }
-  if (data.ocrStatus === 1 && data.faceStatus === 1 && data.videoStatus === 0) {
-    router.push('/video')
+  if (ocrStatus === 1 && faceStatus === 1 && videoStatus === 0) {
+    router.replace('/video')
+    return
   }
-  if (data.ocrStatus === 1 && data.faceStatus === 1 && data.videoStatus === 1) {
+  if (ocrStatus === 1 && faceStatus === 1 && videoStatus === 1) {
     router.push('/detail')
   }
 }

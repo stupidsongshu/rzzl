@@ -6,7 +6,6 @@
 
     <div class="page-content">
       <ul>
-        <!-- <li class="item" v-for="(item, index) in list" :key="item.projectId" @click="viewProject(item)"> -->
         <li class="item" v-for="(item, index) in list" :key="index" @click="viewProject(item)">
           <div class="left">
             <p class="name">{{item.project.projectName}}</p>

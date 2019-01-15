@@ -43,8 +43,13 @@ export default {
       position: absolute
       top: 50%
       left: 50%
+      width: 80%
       transform: translate(-50%, 0)
+      text-align: center
       font-size: $fs-36
+      text-overflow: ellipsis
+      white-space: nowrap
+      overflow: hidden
     .header-right
       font-size: $fs-30
 </style>

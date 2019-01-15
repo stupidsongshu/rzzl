@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <div class="panel" v-show="contractList.length > 0">
+      <div class="panel" v-if="contractList.length > 0">
         <div class="title">签署合同</div>
         <div class="content">
           我已阅读并同意：<span class="protocol" v-for="(item, index) in contractList" :key="index" @click="preview(item)">《{{item.fileName}}》</span>
@@ -99,14 +99,15 @@ export default {
       }
       this.$http(options).then(res => {
         if (res.returnCode === '000000') {
-          this.contractList = res.list
+          this.contractList = res.list || []
         }
       })
     },
     preview (contract) {
-      // this.$router.push({ name: 'PDF', query: { url: Base64.encode(contract.url) } })
+      // this.$router.push({ name: 'PDF', query: { url: Base64.encode(contract.url), fileName: Base64.encode(contract.fileName) } })
+      this.$router.push({ name: 'VuePDF', query: { url: Base64.encode(contract.url), fileName: Base64.encode(contract.fileName) } })
       // this.$router.push({ name: 'VuePDF', query: { url: Base64.encode('http://fintek-static.maimob.net/rzzl/2/六合一贷后页面设计规范.pdf') } })
-      this.$router.push({ name: 'VuePDF', query: { url: Base64.encode('http://xfjr.ledaikuan.cn/六合一贷后页面设计规范.pdf') } })
+      // this.$router.push({ name: 'VuePDF', query: { url: Base64.encode('http://xfjr.ledaikuan.cn/六合一贷后页面设计规范.pdf') } })
     },
     // 查询项目签约人全部明细接口
     projectSignatoryDetail () {

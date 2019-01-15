@@ -16,7 +16,25 @@ export default {
       pages: 0
     }
   },
+  mounted () {
+    let url = Base64.decode(this.$route.query.url)
+    console.log('url---------', url)
+    this.loadFile(url)
+  },
   methods: {
+    loadFile (url) {
+      let _this = this
+      PDFJS.getDocument(url).then(function (pdf) {
+        _this.pdfDoc = pdf
+        _this.pages = _this.pdfDoc.numPages
+        _this.$nextTick(() => {
+          _this.renderPage(1)
+        })
+      }).catch(err => {
+        console.error(err)
+        console.warn(err.message)
+      })
+    },
     renderPage (num) {
       let _this = this
       this.pdfDoc.getPage(num).then(function (page) {
@@ -44,26 +62,7 @@ export default {
           _this.renderPage(num + 1)
         }
       })
-    },
-    loadFile (url) {
-      let _this = this
-      PDFJS.getDocument(url).then(function (pdf) {
-        console.log('pdf----:', pdf)
-        _this.pdfDoc = pdf
-        _this.pages = _this.pdfDoc.numPages
-        _this.$nextTick(() => {
-          _this.renderPage(1)
-        })
-      }).catch(err => {
-        console.error(err)
-        console.warn(err.message)
-      })
     }
-  },
-  mounted () {
-    let url = Base64.decode(this.$route.query.url)
-    console.log('url---------', url)
-    this.loadFile(url)
   }
 }
 </script>

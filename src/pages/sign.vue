@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" v-if="contractList.length > 0">
         <div class="title">签署合同</div>
         <my-xy :xyData="contractList">
           <input class="xy-input" type="checkbox" id="my-xy" v-model="agreeProtocol">
@@ -37,7 +37,7 @@
       </div>
 
       <div class="align-center btn-groups">
-        <my-button :disabled="processStatus.faceStatus === 0" @click="submit">确认</my-button>
+        <my-button @click="submit">确认</my-button>
       </div>
     </div>
   </div>
@@ -111,7 +111,7 @@ export default {
       }
       this.$http(options).then(res => {
         if (res.returnCode === '000000') {
-          this.contractList = res.list
+          this.contractList = res.list || []
         }
       })
     },
@@ -198,6 +198,10 @@ export default {
       }
     },
     getSMSCode () {
+      if (this.processStatus.faceStatus !== 1) {
+        this.toast('请先完成活体认证')
+        return
+      }
       let signatoryMobile = this.projectInfo.signatoryMobile
       if (!signatoryMobile) {
         this.toast('请输入手机号')
@@ -241,10 +245,19 @@ export default {
         }
       }
       this.$http(options).then(res => {
+        if (res.returnCode === '000000') {
+          this.$store.commit('ProcessStatus', res.data)
+          this.processCtrl()
+        } else {
+          this.toast(res.returnMsg)
+        }
       })
     },
     submit () {
-      // this.processCtrl()
+      if (this.processStatus.faceStatus !== 1) {
+        this.toast('请先完成活体认证')
+        return
+      }
       this.signContract()
     }
   }

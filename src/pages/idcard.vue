@@ -47,7 +47,8 @@
         </div>
       </div>
       <div class="align-center">
-        <my-button :disabled="processStatus.ocrStatus === 0" @click="submit">确认</my-button>
+        <!-- <my-button :disabled="processStatus.ocrStatus === 0" @click="submit">确认</my-button> -->
+        <my-button @click="submit">确认</my-button>
       </div>
     </div>
   </div>
@@ -74,6 +75,17 @@ export default {
       return this.$store.state.com.processStatus
     }
   },
+  // beforeRouteLeave (to, from, next) {
+  //   this.routerBeforeEach(to, from, next)
+  // },
+  // beforeRouteLeave (to, from, next) {
+  //   const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+  //   if (answer) {
+  //     next()
+  //   } else {
+  //     next(false)
+  //   }
+  // },
   methods: {
     back () {
       this.goBack()
@@ -173,12 +185,14 @@ export default {
           let msg = '身份信息不一致:' + ocr.name + ' ' + ocr.idcard_number
           this.toast(msg, 5000)
         } else {
-          this.toast(res.returnMsg)
+          this.toast(res.returnMsg, 5000)
         }
       })
     },
     submit () {
-      this.processCtrl()
+      // this.processCtrl()
+      // TODO
+      this.$router.replace('/sign')
     }
   }
 }
