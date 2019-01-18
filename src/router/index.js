@@ -50,7 +50,7 @@ const routes = [
     component: Detail
   },
   {
-    path: '/vuePDF',
+    path: '/pdf',
     component: VuePDF,
     name: 'VuePDF'
   }
@@ -85,18 +85,23 @@ router.beforeEach((to, from, next) => {
     return
   }
 
+  if (mobileNo && to.path === '/login') {
+    // 登录过期
+    next()
+    return
+  }
+
   let isBlack = blackList.some(item => {
     return item === from.path
   })
-  if (isBlack) {
-    if (to.path === '/login') {
-      // 登录过期
-      next()
-      return
-    }
-    console.log('to.path', to.path)
-    console.log('from.path', from.path)
-
+  if (isBlack && to.path === '/list') {
+    // if (to.path === '/login') {
+    //   // 登录过期
+    //   next()
+    //   return
+    // }
+    console.log('to.path:', to.path)
+    console.log('from.path:', from.path)
     MessageBox.confirm('', {
       title: '',
       message: '中途退出需重新进行认证',
@@ -105,7 +110,10 @@ router.beforeEach((to, from, next) => {
       // resetSignatoryStatus().then(_ => {
       //   next()
       // })
-      next({ path: '/list', replace: true })
+      // next({ path: '/list', replace: true })
+      store.dispatch('resetSignatoryStatus').then(_ => {
+        next()
+      })
     }).catch(_ => {
       history.pushState(null, null, document.URL)
       // window.addEventListener('popstate', function () {

@@ -36,8 +36,8 @@
         </div>
       </div>
 
-      <div class="align-center btn-groups" v-if="signatoryStatus === 1">
-        <my-button @click="submit">签署</my-button>
+      <div class="align-center btn-groups" v-if="signatoryStatus === 4">
+        <my-button @click="submit">重新签署</my-button>
       </div>
     </div>
   </div>
@@ -130,7 +130,7 @@ export default {
       })
     },
     submit () {
-      console.log('签署')
+      console.log('重新签署')
     }
   }
 }
@@ -138,13 +138,15 @@ export default {
 
 <style lang="stylus" scoped>
 @import '../assets/style/index.styl'
-
+.page-content
+  padding-bottom: 30px
 .panel
   padding: 42px 36px
-  margin-top: 28px
+  margin-top: 30px
   border-radius: 10px
   background-color #f5f5f6
   .title
+    padding-top: 6px
     padding-left: 22px
     font-size: $fs-30
     border-left: 8px solid;

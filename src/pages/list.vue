@@ -13,7 +13,7 @@
           </div>
           <div class="right">
             <div class="content">
-              <p class="status1">{{signStatusMap[item.project.projectStatus]}}</p>
+              <p class="status1">{{signStatusMap[item.signatoryStatus]}}</p>
               <p class="status2">状态</p>
             </div>
             <div class="arrow-right arrow"></div>

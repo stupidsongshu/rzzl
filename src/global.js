@@ -5,8 +5,10 @@ import { Toast } from 'mint-ui'
 import { http, fileHttp } from './utils'
 
 /* eslint-disable no-unused-vars */
-var VConsole = require('vconsole/dist/vconsole.min')
-var vConsole = new VConsole()
+if (process.env.NODE_ENV === 'develpoment') {
+  var VConsole = require('vconsole/dist/vconsole.min')
+  var vConsole = new VConsole()
+}
 
 Vue.prototype.$http = http
 Vue.prototype.$fileHttp = fileHttp

@@ -190,9 +190,11 @@ export default {
       })
     },
     submit () {
-      // this.processCtrl()
-      // TODO
-      this.$router.replace('/sign')
+      if (this.processStatus.ocrStatus === 0) {
+        this.toast('请先完成身份证认证')
+        return
+      }
+      this.processCtrl()
     }
   }
 }

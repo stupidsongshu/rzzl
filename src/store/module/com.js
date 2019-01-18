@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie'
+import http from '@/http/http'
 
 const state = {
   mobileNo: '',
@@ -31,7 +32,23 @@ const mutations = {
     Cookies.set('faceBizIdInfo', payload, { expires: 1 })
   }
 }
-const actions = {}
+const actions = {
+  // 重设签约人状态
+  resetSignatoryStatus ({ commit, state }) {
+    let options = {
+      url: 'i/resetSignatoryStatus',
+      params: {
+        projectSignatoryId: state.processStatus.projectSignatoryId
+      }
+    }
+    return new Promise((resolve, reject) => {
+      http(options).then(res => {
+        commit('ProcessStatus', res.data)
+        resolve()
+      })
+    })
+  }
+}
 
 export default {
   state,

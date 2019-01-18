@@ -9,7 +9,7 @@
       <div class="video">
         <img src="../assets/img/video.png" alt="">
         <input class="video-input" type="file" accept="video/*" capture="camcorder" @change="videoChange($event)">
-        <p v-if="file">已录制</p>
+        <p class="hint" v-if="file">已录制</p>
       </div>
       <p class="title1">*温馨提示：</p>
       <p class="title2">您需要录用前置摄像头录制一段承诺视频，话术如下：</p>
@@ -94,8 +94,9 @@ export default {
     height: 100%
   img
     width: 100%
-  p
+  .hint
     text-align: center
+    font-size: $fs-28
     color: $color-theme
 .title1
   font-size: $fs-26

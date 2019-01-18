@@ -53,16 +53,6 @@ export default {
       livingImg: '',
       livingImgDefault: require('../assets/img/living_success@2x.png'),
       agreeProtocol: false,
-      // protocolArr: [
-      //   {
-      //     title: '《个人消费贷款合同》',
-      //     url: 'https://zmcustprod.zmxy.com.cn/auth/protocol.htm?merchantId=268820000154396373223&type=03&platform=aop'
-      //   },
-      //   {
-      //     title: '《客户保障计划服务合同》',
-      //     url: 'https://www.baidu.com'
-      //   }
-      // ],
       contractList: [],
       smsCode: '',
       countdown: 60
@@ -197,8 +187,18 @@ export default {
         this.getFaceToken()
       }
     },
+    smsCountDown () {
+      let timer = setInterval(() => {
+        if (this.countdown === 0) {
+          clearInterval(timer)
+          this.countdown = 60
+        } else {
+          this.countdown--
+        }
+      }, 1000)
+    },
     getSMSCode () {
-      if (this.processStatus.faceStatus !== 1) {
+      if (this.processStatus.faceStatus === 0) {
         this.toast('请先完成活体认证')
         return
       }
@@ -254,8 +254,12 @@ export default {
       })
     },
     submit () {
-      if (this.processStatus.faceStatus !== 1) {
+      if (this.processStatus.faceStatus === 0) {
         this.toast('请先完成活体认证')
+        return
+      }
+      if (!this.agreeProtocol) {
+        this.toast('请仔细阅读并同意合同')
         return
       }
       this.signContract()
@@ -269,10 +273,11 @@ export default {
 
 .panel
   padding: 30px 36px 44px 36px
-  margin-top: 28px
+  margin-top: 30px
   border-radius: 10px
   background-color #f5f5f6
   .title
+    padding-top: 6px
     padding-left: 22px
     margin-bottom: 50px
     font-size: $fs-30
