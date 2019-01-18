@@ -80,6 +80,7 @@ export default {
     console.log('faceBizIdInfo:', typeof this.faceBizIdInfo, this.faceBizIdInfo)
     console.log('query:', this.$route.query)
     if (this.faceBizIdInfo && this.$route.query.from === 'face') {
+      sessionStorage.setItem('appFrom', 'face')
       this.getFaceResult()
     }
     this.getContract()
@@ -258,7 +259,7 @@ export default {
         this.toast('请先完成活体认证')
         return
       }
-      if (!this.agreeProtocol) {
+      if (this.contractList.length > 0 && !this.agreeProtocol) {
         this.toast('请仔细阅读并同意合同')
         return
       }

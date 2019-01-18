@@ -5,7 +5,7 @@ import { Toast } from 'mint-ui'
 import { http, fileHttp } from './utils'
 
 /* eslint-disable no-unused-vars */
-if (process.env.NODE_ENV === 'develpoment') {
+if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'development-build') {
   var VConsole = require('vconsole/dist/vconsole.min')
   var vConsole = new VConsole()
 }

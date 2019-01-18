@@ -77,3 +77,17 @@ html, body, #app{
   font-size: 13px !important; /*no*/
   margin-top: 20px;
 }
+/* mint MessageBox */
+.mint-msgbox-wrapper .mint-msgbox .mint-msgbox-content .mint-msgbox-message {
+  padding: 20px;
+  font-size: 16px; /*no*/
+  color: #4380FF;
+}
+.mint-msgbox-wrapper .mint-msgbox .mint-msgbox-btns {
+  height: auto;
+}
+.mint-msgbox-wrapper .mint-msgbox .mint-msgbox-btns .mint-msgbox-btn {
+  padding: 14px;
+  font-size: 14px; /*no*/
+  color: #333;
+}

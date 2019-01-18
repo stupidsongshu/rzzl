@@ -102,10 +102,11 @@ export default {
   justify-content: space-between
   align-items: center
   width: 100%
-  height: 170px
-  padding: 0 10px
+  // height: 170px
+  padding: 40px 10px
   border-bottom: 1px solid #eee; /*no*/
   .left
+    width: 70%
     .name
       margin-bottom: 20px
       font-size: $fs-40
@@ -114,8 +115,10 @@ export default {
       font-size: $fs-26
       color: $color-text-9
   .right
+    width: 30%
     display: flex
     align-items: center
+    justify-content: flex-end
     .content
       text-align: center
       .status1
