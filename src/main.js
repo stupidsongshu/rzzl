@@ -6,7 +6,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 import 'lib-flexible'
-import { Toast, Indicator, MessageBox } from 'mint-ui'
+import { Toast, Indicator } from 'mint-ui'
 import 'mint-ui/lib/style.css'
 
 import './assets/style/reset.css'
@@ -20,7 +20,7 @@ import './global'
 
 Vue.use(Indicator)
 Vue.component(Toast.name, Toast)
-Vue.component(MessageBox.name, MessageBox)
+// Vue.component(MessageBox.name, MessageBox)
 // Vue.component(Popup.name, Popup)
 
 Vue.config.productionTip = false

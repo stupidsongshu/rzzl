@@ -65,7 +65,8 @@ export default {
         if (res.returnCode === '000000') {
           this.toast('视频上传成功，请等待审核', 5000)
           this.$store.commit('ProcessStatus', res.data)
-          this.processCtrl()
+          // this.processCtrl()
+          this.$router.replace('/detail')
         } else {
           this.toast(res.returnMsg)
         }

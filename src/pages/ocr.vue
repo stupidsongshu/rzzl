@@ -47,8 +47,7 @@
         </div>
       </div>
       <div class="align-center">
-        <!-- <my-button :disabled="processStatus.ocrStatus === 0" @click="submit">确认</my-button> -->
-        <my-button @click="submit">确认</my-button>
+        <my-button :disabled="processStatus.ocrStatus === 0" @click="submit">确认</my-button>
       </div>
     </div>
   </div>
@@ -194,7 +193,8 @@ export default {
         this.toast('请先完成身份证认证')
         return
       }
-      this.processCtrl()
+      // this.processCtrl()
+      this.$router.replace('/face')
     }
   }
 }

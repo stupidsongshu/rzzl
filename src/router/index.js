@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
-import { MessageBox } from 'mint-ui'
+// import { MessageBox } from 'mint-ui'
 // import http from '@/http/http'
 
 const Login = () => import('@/pages/login.vue')
 const List = () => import('@/pages/list.vue')
 const Auth = () => import('@/pages/auth.vue')
-const Idcard = () => import('@/pages/idcard.vue')
-const Sign = () => import('@/pages/sign.vue')
+const OCR = () => import('@/pages/ocr.vue')
+const Face = () => import('@/pages/face.vue')
 const Video = () => import('@/pages/video.vue')
 const Detail = () => import('@/pages/detail.vue')
 const VuePDF = () => import('@/pages/vue-pdf.vue')
@@ -34,12 +34,12 @@ const routes = [
     component: Auth
   },
   {
-    path: '/idcard',
-    component: Idcard
+    path: '/ocr',
+    component: OCR
   },
   {
-    path: '/sign',
-    component: Sign
+    path: '/face',
+    component: Face
   },
   {
     path: '/video',
@@ -77,7 +77,7 @@ const router = new Router({
 //   })
 // }
 
-let blackList = ['/idcard', '/sign', '/video']
+let blackList = ['/ocr', '/face', '/video']
 router.beforeEach((to, from, next) => {
   let mobileNo = store.state.com.mobileNo
   // 未登录
@@ -95,45 +95,88 @@ router.beforeEach((to, from, next) => {
     return item === from.path
   })
   let appFromFace = sessionStorage.getItem('appFrom') === 'face'
-  if (isBlack && (to.path === '/list' || appFromFace)) {
-    console.log('to.path:', to.path)
-    console.log('from.path:', from.path, from.fullPath)
+  console.log('from.path:', from.path, from.fullPath)
+  console.log('to.path:', to.path)
+  console.log('isBlack:', isBlack)
+  console.log('appFromFace:', appFromFace)
+  console.log('document.URL:', document.URL)
+  console.log('window.history.length:', window.history.length)
 
-    // window.addEventListener('popstate', function () {
-    //   console.log('popstate')
-    //   window.history.pushState('forward', null, location.href)
-    //   window.history.forward(1)
-    // })
-    // window.history.pushState('forward', null, location.href) // 在IE中必须得有这两行
-    // window.history.forward(1)
+  // history.pushState(null, null, document.URL)
 
-    MessageBox.confirm('', {
-      title: '',
-      message: '中途退出需重新进行认证',
-      closeOnClickModal: false
-    }).then(_ => {
-      // resetSignatoryStatus().then(_ => {
-      //   next()
+  // link start
+  // if (to.path === '/ocr') {
+  //   if (from.path === '/list') store.commit('Link_ocr', 'push')
+  //   if (from.path === '/auth') store.commit('Link_ocr', 'replace')
+  // }
+  // if (to.path === '/face') {
+  //   if (from.path === '/list') store.commit('Link_face', 'push')
+  //   if (from.path === '/ocr') store.commit('Link_face', 'replace')
+  // }
+  // if (to.path === '/video') {
+  //   if (from.path === '/list') store.commit('Link_video', 'push')
+  //   if (from.path === '/face') store.commit('Link_video', 'replace')
+  // }
+  // if (to.path === '/detail') {
+  //   if (from.path === '/list') store.commit('Link_detail', 'push')
+  //   if (from.path === '/video') store.commit('Link_detail', 'replace')
+  // }
+  // link end
+
+  if ((to.path === '/list' && isBlack) || (from.path === '/' && appFromFace)) {
+    if (window.confirm('中途退出需重新进行认证')) {
+      if (appFromFace) sessionStorage.removeItem('appFrom')
+      // next({
+      //   path: '/list',
+      //   replace: true
       // })
-      // next({ path: '/list', replace: true })
 
-      store.dispatch('resetSignatoryStatus').then(_ => {
-        if (appFromFace === 'face') {
-          sessionStorage.removeItem('appFrom')
-        }
-        next({
-          redirect: '/list',
-          replace: true
-        })
-      })
-    }).catch(_ => {
-      // 防止页面后退
-      history.pushState(null, null, document.URL)
-      // window.addEventListener('popstate', function () {
-      //   history.pushState(null, null, document.URL)
-      // })
+      next()
+    } else {
       next(false)
-    })
+    }
+
+    // MessageBox.confirm('', {
+    //   title: '',
+    //   message: '中途退出需重新进行认证',
+    //   closeOnClickModal: false
+    // }).then(_ => {
+    //   // resetSignatoryStatus().then(_ => {
+    //   //   next()
+    //   // })
+    //   // next({ path: '/list', replace: true })
+
+    //   // store.dispatch('resetSignatoryStatus').then(_ => {
+    //   //   if (appFromFace) {
+    //   //     sessionStorage.removeItem('appFrom')
+    //   //   }
+    //   //   next({
+    //   //     redirect: '/list',
+    //   //     replace: true
+    //   //   })
+    //   // })
+
+    //   if (appFromFace) {
+    //     sessionStorage.removeItem('appFrom')
+    //   }
+    //   next({
+    //     redirect: '/list',
+    //     replace: true
+    //   })
+    // }).catch(_ => {
+    //   // 防止页面后退
+    //   history.pushState(null, null, document.URL)
+    //   // window.addEventListener('popstate', function () {
+    //   //   history.pushState(null, null, document.URL)
+    //   // })
+    //   next(false)
+    // })
+  } else if (to.path === '/auth' && from.path === '/ocr') {
+    if (window.confirm('中途退出需重新进行认证')) {
+      router.go(-1)
+    } else {
+      next(false)
+    }
   } else {
     next()
   }

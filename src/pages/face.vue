@@ -248,7 +248,8 @@ export default {
       this.$http(options).then(res => {
         if (res.returnCode === '000000') {
           this.$store.commit('ProcessStatus', res.data)
-          this.processCtrl()
+          // this.processCtrl()
+          this.$router.replace('/video')
         } else {
           this.toast(res.returnMsg)
         }

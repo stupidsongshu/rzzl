@@ -58,24 +58,45 @@ Vue.prototype.processCtrl = function () {
   let ocrStatus = data.ocrStatus
   let faceStatus = data.faceStatus
   let videoStatus = data.videoStatus
+  console.log('operatorStatus:', operatorStatus)
+  console.log('ocrStatus:', ocrStatus)
+  console.log('faceStatus:', faceStatus)
+  console.log('videoStatus:', videoStatus)
+
+  // let linkOcr = store.state.link.link_ocr
+  // let linkFace = store.state.link.link_face
+  // let linkVideo = store.state.link.link_video
+  // let linkDetail = store.state.link.link_detail
+  // console.log('linkOcr:', linkOcr)
+  // console.log('linkFace:', linkFace)
+  // console.log('linkVideo:', linkVideo)
+  // console.log('linkDetail:', linkDetail)
 
   if (operatorStatus === 0) {
     router.push('/auth')
     return
   }
   if (ocrStatus === 0 && faceStatus === 0 && videoStatus === 0) {
-    router.push('/idcard')
+    // if (linkOcr === 'push') router.push('/ocr')
+    // if (linkOcr === 'replace') router.replace('/ocr')
+    router.push('/ocr')
     return
   }
   if (ocrStatus === 1 && faceStatus === 0 && videoStatus === 0) {
-    router.replace('/sign')
+    // if (linkFace === 'push') router.push('/face')
+    // if (linkFace === 'replace') router.replace('/face')
+    router.push('/face')
     return
   }
   if (ocrStatus === 1 && faceStatus === 1 && videoStatus === 0) {
-    router.replace('/video')
+    // if (linkVideo === 'push') router.push('/video')
+    // if (linkVideo === 'replace') router.replace('/video')
+    router.push('/video')
     return
   }
   if (ocrStatus === 1 && faceStatus === 1 && videoStatus === 1) {
+    // if (linkDetail === 'push') router.push('/detail')
+    // if (linkDetail === 'replace') router.replace('/detail')
     router.push('/detail')
   }
 }
