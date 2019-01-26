@@ -3,7 +3,8 @@
     <slot></slot>
     <label class="xy-label" for="my-xy"><slot name="agreeText">我已阅读并同意</slot></label>
     <div class="content">
-      <a class="xy-url color-theme" :href="xy.url" v-for="(xy, index) in xyData" :key="index" @click="xyClick(index, xy)" v-if="xy.url" target="_blank">{{splitTitle(xy.fileName)}}</a>
+      <!-- <a class="xy-url color-theme" :href="xy.url" v-for="(xy, index) in xyData" :key="index" @click="xyClick(index, xy)" v-if="xy.url" target="_blank">《{{splitTitle(xy.fileName)}}》</a> -->
+      <a class="xy-url color-theme" v-for="(xy, index) in xyData" :key="index" @click="xyClick(index, xy)" v-if="xy.url" target="_blank">《{{splitTitle(xy.fileName)}}》</a>
       <a class="xy-url color-theme" v-for="(xy, index) in xyData" :key="index" @click="xyClick(index, xy)" v-if="!xy.url">{{splitTitle(xy.fileName)}}</a>
       <span class="color-theme">{{xyTail}}</span>
     </div>

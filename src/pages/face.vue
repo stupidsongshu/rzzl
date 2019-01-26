@@ -22,7 +22,7 @@
 
       <div class="panel" v-if="contractList.length > 0">
         <div class="title">签署合同</div>
-        <my-xy :xyData="contractList">
+        <my-xy :xyData="contractList" @xyClick="preview">
           <input class="xy-input" type="checkbox" id="my-xy" v-model="agreeProtocol">
         </my-xy>
       </div>
@@ -44,6 +44,8 @@
 </template>
 
 <script>
+let Base64 = require('js-base64').Base64
+
 export default {
   data () {
     return {
@@ -76,18 +78,41 @@ export default {
       }
     }
   },
-  created () {
+  activated () {
+    console.log('processStatus:', this.processStatus)
     console.log('faceBizIdInfo:', typeof this.faceBizIdInfo, this.faceBizIdInfo)
     console.log('query:', this.$route.query)
     if (this.faceBizIdInfo && this.$route.query.from === 'face') {
+      console.log('face-----')
       sessionStorage.setItem('appFrom', 'face')
       this.getFaceResult()
     }
     this.getContract()
   },
+  watch: {
+    '$route' (to, from) {
+      if (
+        (from.path === '/face' && to.path === '/pdf') ||
+        (from.path === '/pdf' && to.path === '/face')
+      ) {
+        console.log('no need refresh')
+      } else {
+        console.log('need refresh')
+        this.resetData()
+      }
+    }
+  },
   methods: {
     back () {
       this.goBack()
+    },
+    resetData () {
+      this.livingStatus = 0
+      this.livingImg = ''
+      this.agreeProtocol = false
+      this.contractList = []
+      this.smsCode = ''
+      this.countdown = 60
     },
     // 拉取合同列表
     getContract () {
@@ -120,18 +145,26 @@ export default {
         return
       }
 
+      // let returnUrl = ''
+      // if (window.location.href.indexOf('?') === -1) {
+      //   returnUrl = window.location.href
+      // } else {
+      //   returnUrl = window.location.href.split('?')[0]
+      // }
+
+      let query = this.$route.query
       let returnUrl = ''
-      if (window.location.href.indexOf('?') === -1) {
+      if (query.from) {
         returnUrl = window.location.href
       } else {
-        returnUrl = window.location.href.split('?')[0]
+        returnUrl = window.location.href + '?from=face'
       }
 
       let options = {
         url: 'i/getFaceToken',
         params: {
           // 网页跳转的目标URL
-          return_url: returnUrl + '?from=face', // 'http://xfjr.ledaikuan.cn/fintek/rzzl/#/video?from=face'
+          return_url: returnUrl, // 'http://xfjr.ledaikuan.cn/fintek/rzzl/index.html#/face?from=face' 'http://xfjr.ledaikuan.cn/fintek/rzzl/index.html?channel=mm#/face?from=face'
           // 验证网页展示用的标题文字
           web_title: '活体识别',
           // 使用场景的scene_id
@@ -265,6 +298,9 @@ export default {
         return
       }
       this.signContract()
+    },
+    preview (index, xy) {
+      this.$router.push({ name: 'VuePDF', query: { url: Base64.encode(xy.url), fileName: Base64.encode(xy.fileName) } })
     }
   }
 }

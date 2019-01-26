@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import VuexPersist from 'vuex-persist'
 
 import com from './module/com'
-import link from './module/link'
 
 Vue.use(Vuex)
 
@@ -13,8 +12,7 @@ const vuexSession = new VuexPersist({
 
 const store = new Vuex.Store({
   modules: {
-    com,
-    link
+    com
   },
   plugins: [vuexSession.plugin]
 })

@@ -45,6 +45,7 @@ export default {
         return
       }
       this.file = files[0]
+      this.toast('视频已录制成功，请点击按钮进行提交')
       console.log(this.file)
       console.log('fileType:', this.file.type)
       console.log('fileSize:', this.file.size / 1024 / 1024 + 'MB')
@@ -59,7 +60,8 @@ export default {
       formData.append('projectSignatoryId', this.processStatus.projectSignatoryId)
       let options = {
         url: 'i/uploadVideo',
-        params: formData
+        params: formData,
+        loadingMsg: '正在上传，请耐心等待'
       }
       this.$fileHttp(options).then(res => {
         if (res.returnCode === '000000') {

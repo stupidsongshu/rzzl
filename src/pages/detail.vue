@@ -36,9 +36,9 @@
         </div>
       </div>
 
-      <div class="align-center btn-groups" v-if="signatoryStatus === 4">
+      <!-- <div class="align-center btn-groups" v-if="signatoryStatus === 4">
         <my-button @click="submit">重新签署</my-button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -78,7 +78,12 @@ export default {
       return this.$store.state.com.signStatusMap
     }
   },
-  created () {
+  // created () {
+  //   console.log('detail created')
+  //   this.getContract()
+  //   this.projectSignatoryDetail()
+  // },
+  activated () {
     this.getContract()
     this.projectSignatoryDetail()
   },
@@ -104,10 +109,7 @@ export default {
       })
     },
     preview (contract) {
-      // this.$router.push({ name: 'PDF', query: { url: Base64.encode(contract.url), fileName: Base64.encode(contract.fileName) } })
       this.$router.push({ name: 'VuePDF', query: { url: Base64.encode(contract.url), fileName: Base64.encode(contract.fileName) } })
-      // this.$router.push({ name: 'VuePDF', query: { url: Base64.encode('http://fintek-static.maimob.net/rzzl/2/六合一贷后页面设计规范.pdf') } })
-      // this.$router.push({ name: 'VuePDF', query: { url: Base64.encode('http://xfjr.ledaikuan.cn/六合一贷后页面设计规范.pdf') } })
     },
     // 查询项目签约人全部明细接口
     projectSignatoryDetail () {

@@ -6,7 +6,7 @@
 
     <div class="page-content">
       <ul>
-        <li class="item" v-for="(item, index) in list" :key="index" @click="viewProject(item)">
+        <li class="item" v-for="(item, index) in list" :key="index" @click="signatoryStatus(item)">
           <div class="left">
             <p class="name">{{item.project.projectName}}</p>
             <p class="desp">项目描述：{{item.project.projectDesc}}</p>
@@ -56,7 +56,7 @@ export default {
       this.$http(options).then(res => {
         this.listHttp = true
         if (res.returnCode === '000000') {
-          this.list = res.list
+          this.list = res.list.filter(item => parseInt(item.project.projectStatus) === 3)
         } else {
           this.toast(res.returnMsg)
         }
@@ -64,10 +64,18 @@ export default {
     },
     // 获取签约人状态
     signatoryStatus (item) {
+      console.log(item)
+      let firstQueryStatus
+      if (sessionStorage.getItem('firstQueryStatus') === null) {
+        firstQueryStatus = 0
+      } else {
+        firstQueryStatus = parseInt(sessionStorage.getItem('firstQueryStatus'))
+      }
       return new Promise(resolve => {
         let options = {
           url: 'i/signatoryStatus',
           params: {
+            firstQueryStatus,
             projectId: item.projectId,
             signatoryIdno: item.signatoryIdno,
             signatoryMobile: item.signatoryMobile,
@@ -78,16 +86,32 @@ export default {
           if (res.returnCode === '000000') {
             this.$store.commit('ProjectInfo', item)
             this.$store.commit('ProcessStatus', res.data)
-            this.processCtrl()
+            firstQueryStatus++
+            sessionStorage.setItem('firstQueryStatus', firstQueryStatus)
+            this.checkStatus(res.data)
           } else {
             this.toast(res.returnMsg)
           }
         })
       })
     },
-    viewProject (item) {
-      if (item.project.projectStatus === '1' || item.project.projectStatus === '2') {
-        this.signatoryStatus(item)
+    // 检查状态是否正常，非正常重置状态
+    checkStatus (data) {
+      let isNormal = false
+      if (
+        (data.ocrStatus === 0 && data.faceStatus === 0 && data.videoStatus === 0) ||
+        (data.operatorStatus === 1 && data.ocrStatus === 1 && data.faceStatus === 1 && data.videoStatus === 1)
+      ) {
+        isNormal = true
+      }
+
+      console.log('检查状态是否正常，非正常重置状态:', isNormal ? '正常' : '异常')
+      if (isNormal) {
+        this.processCtrl()
+      } else {
+        this.$store.dispatch('resetSignatoryStatus').then(_ => {
+          this.processCtrl()
+        })
       }
     }
   }
@@ -129,6 +153,7 @@ export default {
         font-size: $fs-26
         color: $color-text-9
     .arrow
+      flex-shrink: 0
       margin-left: 20px
       color: $color-theme
 </style>

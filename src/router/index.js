@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
-// import { MessageBox } from 'mint-ui'
-// import http from '@/http/http'
+import { MessageBox } from 'mint-ui'
 
 const Login = () => import('@/pages/login.vue')
 const List = () => import('@/pages/list.vue')
@@ -39,7 +38,10 @@ const routes = [
   },
   {
     path: '/face',
-    component: Face
+    component: Face,
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/video',
@@ -47,7 +49,10 @@ const routes = [
   },
   {
     path: '/detail',
-    component: Detail
+    component: Detail,
+    meta: {
+      keepAlive: true
+    }
   },
   {
     path: '/pdf',
@@ -59,23 +64,6 @@ const routes = [
 const router = new Router({
   routes
 })
-
-// 重设签约人状态
-// function resetSignatoryStatus () {
-//   let processStatus = store.state.com.processStatus
-//   let options = {
-//     url: 'i/resetSignatoryStatus',
-//     params: {
-//       projectSignatoryId: processStatus.projectSignatoryId
-//     }
-//   }
-//   return new Promise((resolve, reject) => {
-//     http(options).then(res => {
-//       store.commit('ProcessStatus', res.data)
-//       resolve()
-//     })
-//   })
-// }
 
 let blackList = ['/ocr', '/face', '/video']
 router.beforeEach((to, from, next) => {
@@ -94,92 +82,86 @@ router.beforeEach((to, from, next) => {
   let isBlack = blackList.some(item => {
     return item === from.path
   })
-  let appFromFace = sessionStorage.getItem('appFrom') === 'face'
   console.log('from.path:', from.path, from.fullPath)
   console.log('to.path:', to.path)
   console.log('isBlack:', isBlack)
-  console.log('appFromFace:', appFromFace)
   console.log('document.URL:', document.URL)
   console.log('window.history.length:', window.history.length)
 
-  // history.pushState(null, null, document.URL)
-
-  // link start
-  // if (to.path === '/ocr') {
-  //   if (from.path === '/list') store.commit('Link_ocr', 'push')
-  //   if (from.path === '/auth') store.commit('Link_ocr', 'replace')
-  // }
-  // if (to.path === '/face') {
-  //   if (from.path === '/list') store.commit('Link_face', 'push')
-  //   if (from.path === '/ocr') store.commit('Link_face', 'replace')
-  // }
-  // if (to.path === '/video') {
-  //   if (from.path === '/list') store.commit('Link_video', 'push')
-  //   if (from.path === '/face') store.commit('Link_video', 'replace')
-  // }
-  // if (to.path === '/detail') {
-  //   if (from.path === '/list') store.commit('Link_detail', 'push')
-  //   if (from.path === '/video') store.commit('Link_detail', 'replace')
-  // }
-  // link end
-
-  if ((to.path === '/list' && isBlack) || (from.path === '/' && appFromFace)) {
-    if (window.confirm('中途退出需重新进行认证')) {
-      if (appFromFace) sessionStorage.removeItem('appFrom')
-      // next({
-      //   path: '/list',
-      //   replace: true
+  if (isBlack && to.path === '/list') {
+    MessageBox.confirm('', {
+      title: '',
+      message: '中途退出需重新进行认证',
+      closeOnClickModal: false
+    }).then(_ => {
+      store.dispatch('resetSignatoryStatus').then(_ => {
+        next()
+      })
+    }).catch(_ => {
+      // 防止页面后退
+      history.pushState(null, null, document.URL)
+      // window.addEventListener('popstate', function () {
+      //   history.pushState(null, null, document.URL)
       // })
-
-      next()
-    } else {
       next(false)
-    }
+    })
+    return
+  }
 
-    // MessageBox.confirm('', {
-    //   title: '',
-    //   message: '中途退出需重新进行认证',
-    //   closeOnClickModal: false
-    // }).then(_ => {
-    //   // resetSignatoryStatus().then(_ => {
-    //   //   next()
-    //   // })
-    //   // next({ path: '/list', replace: true })
+  // if (isBlack && to.path === '/list') {
+  //   if (window.confirm('中途退出需重新进行认证')) {
+  //     store.dispatch('resetSignatoryStatus').then(_ => {
+  //       next()
+  //     })
+  //   } else {
+  //     next(false)
+  //   }
+  //   return
+  // }
 
-    //   // store.dispatch('resetSignatoryStatus').then(_ => {
-    //   //   if (appFromFace) {
-    //   //     sessionStorage.removeItem('appFrom')
-    //   //   }
-    //   //   next({
-    //   //     redirect: '/list',
-    //   //     replace: true
-    //   //   })
-    //   // })
+  // let appFromFace = sessionStorage.getItem('appFrom') === 'face'
+  // console.log('appFromFace:', appFromFace)
+  // if (from.path === '/' && to.path === '/face' && appFromFace) {
+  //   if (window.confirm('中途退出需重新进行认证')) {
+  //     store.dispatch('resetSignatoryStatus').then(_ => {
+  //       if (appFromFace) sessionStorage.removeItem('appFrom')
+  //       router.replace('/list')
+  //     })
+  //   } else {
+  //     // 防止页面后退
+  //     // history.pushState(null, null, document.URL)
+  //     // window.location.href = window.location.href
+  //     // next(false)
+  //     // alert(router.currentRoute.fullPath)
+  //     // alert(to.fullPath)
+  //     // sessionStorage.setItem('faceFullPath', to.fullPath)
+  //     // router.push('/middle')
+  //     let needRefreshFaceCount = sessionStorage.getItem('needRefreshFaceCount') || 0
+  //     needRefreshFaceCount++
+  //     sessionStorage.setItem('needRefreshFaceCount', needRefreshFaceCount)
+  //     console.log('needRefreshFaceCount:', needRefreshFaceCount)
+  //     if (needRefreshFaceCount === 1) {
+  //       setTimeout(_ => {
+  //         window.location.reload()
+  //         setTimeout(_ => {
+  //           sessionStorage.setItem('needRefreshFaceCount', 0)
+  //         }, 100)
+  //       }, 1000)
+  //     }
+  //   }
+  //   return
+  // }
 
-    //   if (appFromFace) {
-    //     sessionStorage.removeItem('appFrom')
-    //   }
-    //   next({
-    //     redirect: '/list',
-    //     replace: true
-    //   })
-    // }).catch(_ => {
-    //   // 防止页面后退
-    //   history.pushState(null, null, document.URL)
-    //   // window.addEventListener('popstate', function () {
-    //   //   history.pushState(null, null, document.URL)
-    //   // })
-    //   next(false)
-    // })
-  } else if (to.path === '/auth' && from.path === '/ocr') {
+  if (from.path === '/ocr' && to.path === '/auth') {
     if (window.confirm('中途退出需重新进行认证')) {
       router.go(-1)
     } else {
       next(false)
     }
-  } else {
-    next()
+    return
   }
+
+  next()
 })
 
 export default router

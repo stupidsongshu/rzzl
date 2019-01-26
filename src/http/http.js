@@ -13,7 +13,7 @@ const http = (options) => {
   return new Promise((resolve, reject) => {
     if (loading) {
       Indicator.open({
-        text: '',
+        text: options.loadingMsg || '',
         spinnerType: 'fading-circle'
       })
     }

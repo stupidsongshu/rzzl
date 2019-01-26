@@ -13,7 +13,7 @@
             <div class="idcard__panel__img__inner">
               <img class="idcard__panel__img__origin" :src="idCardFrontImg" alt="人像面" v-show="idCardFrontImg">
               <img class="idcard__panel__img__origin" src="../assets/img/shooting_facade_bg.png" alt="人像面" v-if="!idCardFrontImg">
-              <!-- <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="人像面通过" v-if="idCardFrontStatus"> -->
+              <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="人像面通过" v-if="idCardFrontImg">
             </div>
             <input class="idcard_input" type="file" capture="camera" accept="image/*" @change="idcardOCR(0, $event)">
           </div>
@@ -26,7 +26,7 @@
             <div class="idcard__panel__img__inner">
               <img class="idcard__panel__img__origin" :src="idCardBackImg" alt="国徽面" v-if="idCardBackImg">
               <img class="idcard__panel__img__origin" src="../assets/img/shooting_back_bg.png" alt="国徽面" v-if="!idCardBackImg">
-              <!-- <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="国徽面通过" v-if="idCardBackStatus"> -->
+              <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="国徽面通过" v-if="idCardBackImg">
             </div>
             <input class="idcard_input" type="file" capture="camera" accept="image/*" @change="idcardOCR(1, $event)">
           </div>
@@ -93,6 +93,9 @@ export default {
     idcardOCR (type, e) {
       let files = e.target.files || e.dataTransfer.files
       if (!files.length === 0) return
+
+      // this.loading.open('正在解析')
+
       let file = files[0]
       console.log(file)
       console.log('fileType:', file.type)
@@ -151,6 +154,14 @@ export default {
 
           e.target.value = ''
 
+          // this.loading.close()
+
+          // if (type === 0) {
+          //   this.idCardFrontImg = base64
+          // } else if (type === 1) {
+          //   this.idCardBackImg = base64
+          // }
+
           this.uploadIdCardOcr(base64, type)
         }
       }
@@ -184,7 +195,8 @@ export default {
           let msg = '身份信息不一致:' + ocr.name + ' ' + ocr.idcard_number
           this.toast(msg, 5000)
         } else {
-          this.toast(res.returnMsg, 5000)
+          let msg = '请重新拍摄:' + res.returnMsg
+          this.toast(msg, 5000)
         }
       })
     },
@@ -220,6 +232,8 @@ export default {
           color: red
       .idcard__panel__img
         position: relative
+        width: 100%
+        height: 200px
         margin-bottom: 6%
         border: 1px solid #DEDEDE; /*no*/
         border-radius: 10px
@@ -228,11 +242,11 @@ export default {
           top: 0
           right: 0
           opacity: 0
-          width: 316px
-          height: 200px
+          width: 100%
+          height: 100%
         .idcard__panel__img__inner
-          width: 316px
-          height: 200px
+          width: 100%
+          height: 100%
           .idcard__panel__img__origin
             width: 100%
             height: 100%
