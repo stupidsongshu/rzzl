@@ -152,12 +152,33 @@ router.beforeEach((to, from, next) => {
   //   return
   // }
 
+  // if (from.path === '/ocr' && to.path === '/auth') {
+  //   if (window.confirm('中途退出需重新进行认证')) {
+  //     router.go(-1)
+  //   } else {
+  //     next(false)
+  //   }
+  //   return
+  // }
+
   if (from.path === '/ocr' && to.path === '/auth') {
-    if (window.confirm('中途退出需重新进行认证')) {
-      router.go(-1)
-    } else {
+    MessageBox.confirm('', {
+      title: '',
+      message: '中途退出需重新进行认证',
+      closeOnClickModal: false
+    }).then(_ => {
+      store.dispatch('resetSignatoryStatus').then(_ => {
+        // next()
+        router.go(-1)
+      })
+    }).catch(_ => {
+      // 防止页面后退
+      history.pushState(null, null, document.URL)
+      // window.addEventListener('popstate', function () {
+      //   history.pushState(null, null, document.URL)
+      // })
       next(false)
-    }
+    })
     return
   }
 
