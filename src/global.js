@@ -4,6 +4,9 @@ import store from './store'
 import { Toast, Indicator } from 'mint-ui'
 import { http, fileHttp } from './utils'
 
+Vue.use(Indicator)
+Vue.component(Toast.name, Toast)
+
 /* eslint-disable no-unused-vars */
 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'development-build') {
   var VConsole = require('vconsole/dist/vconsole.min')

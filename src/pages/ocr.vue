@@ -92,9 +92,7 @@ export default {
     // type: 0人像面 1国徽面
     idcardOCR (type, e) {
       let files = e.target.files || e.dataTransfer.files
-      if (!files.length === 0) return
-
-      // this.loading.open('正在解析')
+      if (files.length === 0) return
 
       let file = files[0]
       console.log(file)
@@ -104,6 +102,27 @@ export default {
         this.toast('只支持jpg或jpeg格式图片')
         return
       }
+
+      this.loading.open('正在解析')
+      // 通过延时fix压缩递归导致loading不显示
+      setTimeout(_ => {
+        this.idcardOCRHandle(file, type, e)
+      }, 100)
+    },
+    idcardOCRHandle (file, type, e) {
+      // let files = e.target.files || e.dataTransfer.files
+      // if (files.length === 0) return
+
+      // let file = files[0]
+      // console.log(file)
+      // console.log('fileType:', file.type)
+      // console.log('fileSize:', file.size / 1024 / 1024 + 'MB')
+      // if (file.type !== 'image/jpeg') {
+      //   this.toast('只支持jpg或jpeg格式图片')
+      //   return
+      // }
+
+      // this.loading.open('正在解析')
 
       let base64
       let compressRate = 1
@@ -154,7 +173,7 @@ export default {
 
           e.target.value = ''
 
-          // this.loading.close()
+          this.loading.close()
 
           // if (type === 0) {
           //   this.idCardFrontImg = base64
