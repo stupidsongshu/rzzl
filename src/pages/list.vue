@@ -56,7 +56,11 @@ export default {
       this.$http(options).then(res => {
         this.listHttp = true
         if (res.returnCode === '000000') {
-          this.list = res.list.filter(item => parseInt(item.project.projectStatus) === 3)
+          this.list = res.list.filter(item => {
+            // projectStatus:项目状态 0默认值 1创建成功待审核 2信息录入完成待复核 3复核通过待签约 4复核拒绝待修改 5签约完成待审核 6审核通过项目成功 7审核失败，项目结束
+            let projectStatus = Number(item.project.projectStatus)
+            return projectStatus === 3 || projectStatus === 5 || projectStatus === 6
+          })
         } else {
           this.toast(res.returnMsg)
         }
@@ -69,7 +73,7 @@ export default {
       if (sessionStorage.getItem('firstQueryStatus') === null) {
         firstQueryStatus = 0
       } else {
-        firstQueryStatus = parseInt(sessionStorage.getItem('firstQueryStatus'))
+        firstQueryStatus = Number(sessionStorage.getItem('firstQueryStatus'))
       }
       return new Promise(resolve => {
         let options = {
@@ -130,7 +134,7 @@ export default {
   padding: 40px 10px
   border-bottom: 1px solid #eee; /*no*/
   .left
-    width: 70%
+    width: 60%
     .name
       margin-bottom: 20px
       font-size: $fs-40
@@ -139,7 +143,7 @@ export default {
       font-size: $fs-26
       color: $color-text-9
   .right
-    width: 30%
+    width: 40%
     display: flex
     align-items: center
     justify-content: flex-end
@@ -147,7 +151,7 @@ export default {
       text-align: center
       .status1
         margin-bottom: 20px
-        font-size: $fs-36
+        font-size: $fs-32
         color: $color-text-6
       .status2
         font-size: $fs-26

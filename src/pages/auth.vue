@@ -57,7 +57,8 @@ export default {
         if (res.returnCode === '000000') {
           this.$store.commit('ProcessStatus', res.data)
           // this.processCtrl()
-          this.$router.replace('/ocr')
+          // this.$router.replace('/ocr')
+          this.$router.replace('/face')
         } else {
           this.toast(res.returnMsg)
         }

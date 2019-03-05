@@ -149,6 +149,18 @@ if (env.NODE_ENV === '"production"') {
   )
 }
 
+// webpackConfig.plugins.push(
+//   new UglifyJsPlugin({
+//     uglifyOptions: {
+//       compress: {
+//         warnings: false
+//       }
+//     },
+//     sourceMap: config.build.productionSourceMap,
+//     parallel: true
+//   })
+// )
+
 if (config.build.productionGzip) {
   const CompressionWebpackPlugin = require('compression-webpack-plugin')
 

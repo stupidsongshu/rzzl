@@ -14,18 +14,44 @@
         <div class="title">身份信息</div>
         <div class="content">
           <p>姓名：<span>{{signatoryName}}</span></p>
-          <p>身份证号：<span>{{signatoryIdno}}</span></p>
           <p>手机号：<span>{{signatoryMobile}}</span></p>
+          <p>身份证号：<span>{{signatoryIdno}}</span></p>
         </div>
       </div>
 
       <div class="panel">
-        <div class="title">活体照片</div>
+        <div class="title">身份证</div>
+        <div class="content idcard">
+          <div class="idcard-item">
+            <img :src="idcardFrontObjectName" alt="">
+            <span>身份证人像面</span>
+          </div>
+          <div class="idcard-item">
+            <img :src="idcardBackObjectName" alt="">
+            <span>身份证国徽面</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="title">验证照片</div>
         <div class="content">
           <div class="living-default" v-if="!faceObjectName"></div>
           <div class="living-img" v-else>
-            <img :src="faceObjectName" alt="活体照片">
+            <img :src="faceObjectName" alt="验证照片">
           </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="title">视频录制</div>
+        <div class="content">
+          <!-- <video class="video" controls>
+            <source :src="videoObjectName">
+          </video> -->
+          <video class="video" controls :src="videoObjectName">
+            您的浏览器不支持 video 标签。
+          </video>
         </div>
       </div>
 
@@ -64,7 +90,10 @@ export default {
       signatoryName: '',
       signatoryIdno: '',
       signatoryMobile: '',
-      faceObjectName: ''
+      faceObjectName: '',
+      idcardFrontObjectName: '',
+      idcardBackObjectName: '',
+      videoObjectName: ''
     }
   },
   computed: {
@@ -84,12 +113,13 @@ export default {
   //   this.projectSignatoryDetail()
   // },
   activated () {
-    this.getContract()
+    // this.getContract()
     this.projectSignatoryDetail()
   },
   methods: {
     back () {
-      this.goBack()
+      // this.goBack()
+      this.$router.push('/list')
     },
     // 拉取合同列表
     getContract () {
@@ -128,7 +158,14 @@ export default {
         this.signatoryMobile = projectSignatory.signatoryMobile
 
         this.signatoryStatus = signatoryStatus.signatoryStatus
+        this.idcardFrontObjectName = signatoryStatus.idcardFrontObjectName
+        this.idcardBackObjectName = signatoryStatus.idcardBackObjectName
         this.faceObjectName = signatoryStatus.faceObjectName
+        this.videoObjectName = signatoryStatus.videoObjectName
+        // 身份证
+        // 视频
+        // 合同
+        this.contractList = res.data.contractList || []
       })
     },
     submit () {
@@ -160,6 +197,17 @@ export default {
     font-size: $fs-28
   .sign-status
     color: $color-theme
+  .idcard
+    display: flex
+    justify-content: space-between
+    .idcard-item
+      width: 47.3%
+      text-align: center
+      img
+        display block
+        width 100%
+        height: 200px
+        margin-bottom: 10px
   .living-default
     width: 260px
     height: 260px
@@ -170,6 +218,9 @@ export default {
     margin: 0 auto
     img
       width: 100%
+  .video
+    width: 100%
+    height: auto
   .protocol
     color: $color-theme
 

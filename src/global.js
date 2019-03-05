@@ -63,11 +63,15 @@ Vue.prototype.processCtrl = function () {
     router.push('/auth')
     return
   }
-  if (ocrStatus === 0 && faceStatus === 0 && videoStatus === 0) {
-    router.push('/ocr')
-    return
-  }
-  if (ocrStatus === 1 && faceStatus === 0 && videoStatus === 0) {
+  // if (ocrStatus === 0 && faceStatus === 0 && videoStatus === 0) {
+  //   router.push('/ocr')
+  //   return
+  // }
+  // if (ocrStatus === 1 && faceStatus === 0 && videoStatus === 0) {
+  //   router.push('/face')
+  //   return
+  // }
+  if (ocrStatus === 0 || faceStatus === 0) {
     router.push('/face')
     return
   }

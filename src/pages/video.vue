@@ -13,7 +13,7 @@
       </div>
       <p class="title1">*温馨提示：</p>
       <p class="title2">您需要录用前置摄像头录制一段承诺视频，话术如下：</p>
-      <div class="panel">本人承诺向XXX借款/担保，提供真实资料，遵守合约，同意上报征信。</div>
+      <div class="panel">本人承诺向金巍融资租赁签署文件真实有效、遵守合约，同意上报征信。</div>
 
       <div class="align-center">
         <my-button @click="submit">提交</my-button>

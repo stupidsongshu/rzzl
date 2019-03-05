@@ -7,16 +7,16 @@
 
     <div class="page-content">
       <div class="panel">
-        <div class="title">活体认证</div>
+        <div class="title">人证验证</div>
         <div class="living__img">
           <div class="living__wrapper" @click="livingCheck">
-            <img v-if="livingStatus === 0" src="../assets/img/living_click_default.png" alt="活体认证">
-            <img v-if="livingStatus === 1" :src="livingImg" alt="活体认证成功">
-            <img v-if="livingStatus === 2" src="../assets/img/living_faile.png" alt="活体认证失败">
+            <img v-if="livingStatus === 0" src="../assets/img/living_click_default.png" alt="人证验证">
+            <img v-if="livingStatus === 1" :src="livingImg" alt="人证验证成功">
+            <img v-if="livingStatus === 2" src="../assets/img/living_faile.png" alt="人证验证失败">
           </div>
           <p v-if="livingStatus === 0">点击图标进行识别<br/>请正面对准手机，确保光线充足</p>
-          <p v-if="livingStatus === 1">恭喜您<br/>活体认证成功</p>
-          <p v-if="livingStatus === 2">很遗憾<br/>活体认证失败</p>
+          <p v-if="livingStatus === 1">恭喜您<br/>人证验证成功</p>
+          <p v-if="livingStatus === 2">很遗憾<br/>人证验证失败</p>
         </div>
       </div>
 
@@ -82,12 +82,17 @@ export default {
     console.log('processStatus:', this.processStatus)
     console.log('faceBizIdInfo:', typeof this.faceBizIdInfo, this.faceBizIdInfo)
     console.log('query:', this.$route.query)
-    if (this.faceBizIdInfo && this.$route.query.from === 'face') {
+    this.getContract()
+    // if (this.faceBizIdInfo && this.$route.query.from.indexOf('face') !== 1) {
+    //   console.log('face-----')
+    //   sessionStorage.setItem('appFrom', 'face')
+    //   this.getFaceResult()
+    // }
+    if (this.$route.query.from.indexOf('face') !== 1) {
       console.log('face-----')
       sessionStorage.setItem('appFrom', 'face')
-      this.getFaceResult()
+      this.getH5FaceResult()
     }
-    this.getContract()
   },
   watch: {
     '$route' (to, from) {
@@ -117,6 +122,7 @@ export default {
     // 拉取合同列表
     getContract () {
       let options = {
+        loading: false,
         url: 'i/getContract',
         params: {
           projectSignatoryId: this.processStatus.projectSignatoryId,
@@ -131,7 +137,7 @@ export default {
         }
       })
     },
-    // 获取Face活体认证Token
+    // 获取Face人证验证Token
     getFaceToken () {
       let idCardName = this.projectInfo.signatoryName
       let idCardNumber = this.projectInfo.signatoryIdno
@@ -166,7 +172,7 @@ export default {
           // 网页跳转的目标URL
           return_url: returnUrl, // 'http://xfjr.ledaikuan.cn/fintek/rzzl/index.html#/face?from=face' 'http://xfjr.ledaikuan.cn/fintek/rzzl/index.html?channel=mm#/face?from=face'
           // 验证网页展示用的标题文字
-          web_title: '活体识别',
+          web_title: '人证验证',
           // 使用场景的scene_id
           scene_id: '',
           // 身份对象的姓名
@@ -188,7 +194,45 @@ export default {
         }
       })
     },
-    // 获取Face活体认证结果
+    getH5FaceToken () {
+      // let returnUrl = ''
+      // if (window.location.href.indexOf('?') === -1) {
+      //   returnUrl = window.location.href
+      // } else {
+      //   returnUrl = window.location.href.split('?')[0]
+      // }
+
+      let query = this.$route.query
+      let returnUrl = ''
+      if (query.from) {
+        returnUrl = window.location.href
+      } else {
+        returnUrl = window.location.href + '?from=face'
+      }
+
+      let options = {
+        url: 'i/h5FaceToken',
+        params: {
+          // 网页跳转的目标URL
+          return_url: returnUrl, // 'http://xfjr.ledaikuan.cn/fintek/rzzl/index.html#/face?from=face' 'http://xfjr.ledaikuan.cn/fintek/rzzl/index.html?channel=mm#/face?from=face'
+          projectSignatoryId: this.processStatus.projectSignatoryId
+        }
+      }
+      this.$http(options).then(res => {
+        if (res.returnCode === '000000') {
+          // this.$store.commit('FaceBizIdInfo', {
+          //   bizId: res.data.biz_id
+          // })
+          this.$store.commit('FaceBizIdInfo', {
+            biz_token: res.data.biz_token
+          })
+          window.location.href = res.data.url
+        } else {
+          this.toast(res.returnMsg)
+        }
+      })
+    },
+    // 获取Face人证验证结果
     getFaceResult () {
       let bizIdInfo = this.faceBizIdInfo
       console.log('bizIdInfo:', typeof bizIdInfo, bizIdInfo)
@@ -216,9 +260,37 @@ export default {
         }
       })
     },
+    getH5FaceResult () {
+      let from = this.$route.query.from
+      if (!from) return
+      let bizTokenStr = from.split('?')[1]
+      if (!bizTokenStr) return
+      let bizToken = bizTokenStr.split('=')[1]
+      if (!bizToken) return
+
+      let options = {
+        url: 'i/h5FaceResult',
+        params: {
+          biz_token: bizToken,
+          projectSignatoryId: this.processStatus.projectSignatoryId
+        }
+      }
+      this.$http(options).then(res => {
+        if (res.returnCode === '000000') {
+          this.livingStatus = 1
+          this.livingImg = res.result.image_best || this.livingImgDefault
+          this.$store.commit('FaceBizIdInfo', null)
+          this.$store.commit('ProcessStatus', res.data)
+        } else {
+          this.livingStatus = 2
+          this.toast(res.returnMsg)
+        }
+      })
+    },
     livingCheck () {
       if (this.livingStatus !== 1) {
-        this.getFaceToken()
+        // this.getFaceToken()
+        this.getH5FaceToken()
       }
     },
     smsCountDown () {
@@ -233,7 +305,7 @@ export default {
     },
     getSMSCode () {
       if (this.processStatus.faceStatus === 0) {
-        this.toast('请先完成活体认证')
+        this.toast('请先完成人证验证')
         return
       }
       let signatoryMobile = this.projectInfo.signatoryMobile
@@ -290,7 +362,7 @@ export default {
     },
     submit () {
       if (this.processStatus.faceStatus === 0) {
-        this.toast('请先完成活体认证')
+        this.toast('请先完成人证验证')
         return
       }
       if (this.contractList.length > 0 && !this.agreeProtocol) {
