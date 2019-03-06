@@ -11,7 +11,7 @@
           <div class="idcard__panel__img">
             <!-- <div class="idcard__panel__img__inner" @click="idcardFrontOCR"> -->
             <div class="idcard__panel__img__inner">
-              <span class="idcard__panel__txt__origin" v-show="!idCardFrontImg">点我</span>
+              <span class="idcard__panel__txt__origin" v-show="!idCardFrontImg">点击拍摄</span>
               <img class="idcard__panel__img__origin" :src="idCardFrontImg" alt="人像面" v-show="idCardFrontImg">
               <img class="idcard__panel__img__origin" src="../assets/img/shooting_facade_bg.png" alt="人像面" v-if="!idCardFrontImg">
               <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="人像面通过" v-if="idCardFrontImg">
@@ -25,7 +25,7 @@
           <div class="idcard__panel__img">
             <!-- <div class="idcard__panel__img__inner" @click="idcardBackOCR"> -->
             <div class="idcard__panel__img__inner">
-              <span class="idcard__panel__txt__origin" v-show="!idCardBackImg">点我</span>
+              <span class="idcard__panel__txt__origin" v-show="!idCardBackImg">点击拍摄</span>
               <img class="idcard__panel__img__origin" :src="idCardBackImg" alt="国徽面" v-if="idCardBackImg">
               <img class="idcard__panel__img__origin" src="../assets/img/shooting_back_bg.png" alt="国徽面" v-if="!idCardBackImg">
               <img class="idcard__panel__img__success" src="../assets/img/shooting_correct.png" alt="国徽面通过" v-if="idCardBackImg">

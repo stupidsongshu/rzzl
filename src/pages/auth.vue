@@ -2,7 +2,7 @@
   <div class="page has-header">
     <my-header>
       <span class="header-back" @click="back"></span>
-      <span class="header-title">运营商认证</span>
+      <span class="header-title">手机实名认证</span>
     </my-header>
 
     <div class="page-content">
