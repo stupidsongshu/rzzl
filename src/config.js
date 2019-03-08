@@ -5,7 +5,8 @@ if (env === 'development' || env === 'development-build') {
   // baseURL = 'http://sc.ledaikuan.cn/'
   baseURL = 'http://rzzl.ledaikuan.cn/'
 } else if (env === 'production') {
-  baseURL = 'http://rzi.ledaikuan.cn/'
+  // baseURL = 'http://rzi.ledaikuan.cn/'
+  baseURL = 'http://rzzl.yanmachina.com/rzi/'
 }
 
 export {
